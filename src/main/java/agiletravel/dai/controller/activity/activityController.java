@@ -1,0 +1,65 @@
+package agiletravel.dai.controller.activity;
+
+import agiletravel.dai.entity.Activity;
+import agiletravel.dai.reconst.success.ActivitySuccess;
+import agiletravel.dai.service.activity.ActivityService;
+import agiletravel.dai.utils.Response;
+import agiletravel.dai.utils.ResponseFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+public class activityController {
+    @Autowired
+    private ActivityService activityService;
+
+    @RequestMapping("/activity/release")
+    public Response releaseActivityInfo(@RequestBody Activity activity){
+        activityService.releaseActivityInfo(activity);
+        return ResponseFactory.okResponse(ActivitySuccess.RELEASE_ACTIVITY_SUCCESS);
+    }
+
+    @RequestMapping("/activity/update")
+    public Response updateActivityInfo(@RequestBody Activity activity){
+        activityService.updateActivityInfo(activity);
+        return ResponseFactory.okResponse(ActivitySuccess.UPDATE_ACTIVITY_INFO_SUCCESS);
+    }
+
+    @RequestMapping("/activity/cancle")
+    public Response cancleActivity(@RequestParam String travelid){
+        activityService.cancleActivity(travelid);
+        return ResponseFactory.okResponse(ActivitySuccess.CANCLE_ACTIVITY_SUCCESS);
+    }
+
+    @RequestMapping("/activity/viewAll")
+    public Response viewAll(){
+        List<Activity> list = activityService.viewAll();
+        return ResponseFactory.okResponse(list);
+    }
+
+    @RequestMapping("/activity/findByKind")
+    public Response findByKind(@RequestParam String kind){
+        List<Activity> list = activityService.findByKind(kind);
+        return ResponseFactory.okResponse(list);
+    }
+
+    @RequestMapping(value = "/activity/findByCity")
+    public Response findByCity(@RequestParam String city){
+        List<Activity> list = activityService.findByCity(city);
+        return ResponseFactory.okResponse(list);
+    }
+
+    @RequestMapping(value = "/activity/detail")
+    public Response findViewDetail(@RequestParam String travelid){
+        Activity activityFind = activityService.viewDetail(travelid);
+        return ResponseFactory.okResponse(activityFind);
+    }
+
+    @RequestMapping("/activity/myRelease")
+    public Response viewMyReleaseActivities(@RequestParam String openid){
+        List<Activity> list = activityService.viewMyReleaseActivities(openid);
+        return ResponseFactory.okResponse(list);
+    }
+}
