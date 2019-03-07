@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -57,8 +58,7 @@ public class ShareController {
         }
         try{
             file.transferTo(dest);
-            String url = fileName;
-            log.info(url);
+            String url = "http://wwww.yangdeyu.cn/"+fileName;
             log.info("上传成功");
             shareService.addShare(new Shares(openid,comment,url));
         }catch (Exception e){
@@ -66,6 +66,12 @@ public class ShareController {
         }
 
         return ResponseFactory.okResponse(SharesSuccess.RELEASE_SUCCESS);
+    }
+
+    @RequestMapping("/shares/myShares")
+    public Response viewMyShares(@RequestParam String openid){
+        List<Shares> list = shareService.viewMyShares(openid);
+        return ResponseFactory.okResponse(list);
     }
 
 }

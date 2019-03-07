@@ -7,7 +7,9 @@ public enum activityEnum {
     ACTIVITY_NOT_EXIST(0004,"活动不存在"),
     NO_ACTIVITY(0005,"暂时还没有人创建活动"),
     INCLUDE_BAD_WORDS(0006,"您的描述中存在敏感词汇，请重新发布活动"),
-    NO_RELEASE_ACTIVITIES(0007,"您还没有发布过任何活动");
+    NO_RELEASE_ACTIVITIES(0007,"您还没有发布过任何活动"),
+    ACTIVITY_IS_FULL(8,"很抱歉，本次活动已达人数上限，请关注下次活动")
+    ;
     private int code;
     private String data;
 

@@ -25,7 +25,7 @@ public class AttendListDaoImpl implements AttendListDao {
 
     @Override
     public List<reViewUser> findByTravelid(String travelid) {
-        String sql="select attendlist.openid, nickName, phoneNumber from attendlist as att, users as us where att.openid = us.openid and att.travelid=?";
+        String sql="select att.openid, nickName, phoneNumber from attendlist as att, users as us where att.openid = us.openid and att.travelid=?";
         List<reViewUser> list = jdbcTemplate.query(sql,new BeanPropertyRowMapper<>(reViewUser.class),travelid);
         return list;
     }

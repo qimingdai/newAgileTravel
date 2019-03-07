@@ -7,6 +7,8 @@ import agiletravel.dai.dao.user.UserDao;
 import agiletravel.dai.entity.Activity;
 import agiletravel.dai.entity.AttendList;
 import agiletravel.dai.entity.User;
+import agiletravel.dai.form.reDetailActivity;
+import agiletravel.dai.form.reSimpleActivity;
 import agiletravel.dai.form.reViewUser;
 import agiletravel.dai.reconst.activityEnum;
 import agiletravel.dai.utils.*;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -52,6 +55,9 @@ public class ActivityServiceImpl implements ActivityService {
             throw new ActivityException(activityEnum.INCLUDE_BAD_WORDS);
         }
         activityDao.addActivity(activity);
+        log.info("添加活动的剩余人数缓存");
+        javaRedis.setKeyValue(activity.getTravelid(),String.valueOf(activity.getTotalNumber()));
+        log.info("添加剩余人数缓存成功");
     }
 
     @Override
@@ -63,10 +69,12 @@ public class ActivityServiceImpl implements ActivityService {
         }
         activityDao.updateActivity(activity);
         List<reViewUser> list = attendListDao.findByTravelid(activity.getTravelid());
-        log.info("开始通知参加的人活动变更");
+        log.info("开始通知参加的人活动变更，需要通知"+list.size()+"人");
         for(reViewUser users : list){
-            alertActivity(users.openid,activity.getTravelName(),activity.getCity(),activity.getEndTime(),
+            String activityTime = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(activity.getEndTime());
+            alertActivity(users.openid,activity.getTravelName(),activity.getCity(),activityTime,
                     MiniProgramConst.updateTemplate_id,MiniProgramConst.updateForm_id);
+            log.info("通知活动变更中......");
         }
         log.info("通知所有参加活动的人活动更新完毕");
     }
@@ -77,17 +85,26 @@ public class ActivityServiceImpl implements ActivityService {
         activityDao.cancleActivity(travelid);
         List<reViewUser> list = attendListDao.findByTravelid(travelid);
         Activity activity = activityDao.findByTravelId(travelid);
-        log.info("开始通知所有人活动取消");
+        log.info("开始通知所有人活动取消，需要通知"+list.size()+"人");
         for(reViewUser users: list){
             alertActivity(users.openid,activity.getTravelName(),activity.getCity(),"",
                     MiniProgramConst.cancleTemplate_id,MiniProgramConst.cancleForm_id);
             attendListDao.deleteAttendList(travelid, users.openid);
+            log.info("取消参加活动中......");
         }
         log.info("通知所有人活动取消完毕");
+        log.info("清除取消的活动的剩余人数缓存");
+        if(javaRedis.deleteKey(travelid)){
+            log.info("清除缓存成功");
+        }else{
+            log.info("清除缓存失败");
+        }
+
+
     }
 
     @Override
-    public List<Activity> viewAll() {
+    public List<reSimpleActivity> viewAll() {
         List list =  activityDao.findAll();
         if(list==null || list.isEmpty()){
             throw new ActivityException(activityEnum.NO_ACTIVITY);
@@ -96,9 +113,9 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<Activity> findByKind(String kind) {
+    public List<reSimpleActivity> findByKind(String kind) {
 
-        List<Activity> list = activityDao.findByKind(kind);
+        List<reSimpleActivity> list = activityDao.findByKind(kind);
         if (list == null || list.isEmpty()) {
             throw new ActivityException(activityEnum.ACTIVITY_NOT_EXIST);
         }
@@ -106,8 +123,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<Activity> findByCity(String city) {
-        List<Activity> list = activityDao.findByCity(city);
+    public List<reSimpleActivity> findByCity(String city) {
+        List<reSimpleActivity> list = activityDao.findByCity(city);
         if (list == null || list.isEmpty()) {
             throw new ActivityException(activityEnum.ACTIVITY_NOT_EXIST);
         }
@@ -122,13 +139,19 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Activity viewDetail(String travelid) {
-        return activityDao.findByTravelId(travelid);
+    public reDetailActivity viewDetail(String travelid) {
+
+         Activity activity = activityDao.findByTravelId(travelid);
+         String restNumber = javaRedis.getKeyValue(travelid);
+         Integer rest = Integer.parseInt(restNumber);
+         reDetailActivity reDetailActivity = new reDetailActivity(activity.getTravelid(),activity.getCity(),"","",
+                 activity.getTravelName(),activity.getDescription(),activity.getKind(),activity.getCost(),activity.getTotalNumber(),rest);
+         return reDetailActivity;
     }
 
     @Override
-    public List<Activity> viewMyReleaseActivities(String openid) {
-        List<Activity> list = activityDao.findByOpenId(openid);
+    public List<reSimpleActivity> viewMyReleaseActivities(String openid) {
+        List<reSimpleActivity> list = activityDao.findByOpenId(openid);
         if(list==null || list.isEmpty()){
             throw new ActivityException(activityEnum.NO_RELEASE_ACTIVITIES);
         }

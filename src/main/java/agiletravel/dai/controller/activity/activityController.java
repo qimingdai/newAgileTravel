@@ -1,6 +1,8 @@
 package agiletravel.dai.controller.activity;
 
 import agiletravel.dai.entity.Activity;
+import agiletravel.dai.form.reDetailActivity;
+import agiletravel.dai.form.reSimpleActivity;
 import agiletravel.dai.reconst.success.ActivitySuccess;
 import agiletravel.dai.service.activity.ActivityService;
 import agiletravel.dai.utils.Response;
@@ -35,31 +37,31 @@ public class activityController {
 
     @RequestMapping("/activity/viewAll")
     public Response viewAll(){
-        List<Activity> list = activityService.viewAll();
+        List<reSimpleActivity> list = activityService.viewAll();
         return ResponseFactory.okResponse(list);
     }
 
     @RequestMapping("/activity/findByKind")
     public Response findByKind(@RequestParam String kind){
-        List<Activity> list = activityService.findByKind(kind);
+        List<reSimpleActivity> list = activityService.findByKind(kind);
         return ResponseFactory.okResponse(list);
     }
 
     @RequestMapping(value = "/activity/findByCity")
     public Response findByCity(@RequestParam String city){
-        List<Activity> list = activityService.findByCity(city);
+        List<reSimpleActivity> list = activityService.findByCity(city);
         return ResponseFactory.okResponse(list);
     }
 
     @RequestMapping(value = "/activity/detail")
     public Response findViewDetail(@RequestParam String travelid){
-        Activity activityFind = activityService.viewDetail(travelid);
+        reDetailActivity activityFind = activityService.viewDetail(travelid);
         return ResponseFactory.okResponse(activityFind);
     }
 
     @RequestMapping("/activity/myRelease")
     public Response viewMyReleaseActivities(@RequestParam String openid){
-        List<Activity> list = activityService.viewMyReleaseActivities(openid);
+        List<reSimpleActivity> list = activityService.viewMyReleaseActivities(openid);
         return ResponseFactory.okResponse(list);
     }
 }
