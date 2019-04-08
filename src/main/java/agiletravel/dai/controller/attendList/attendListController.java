@@ -10,10 +10,7 @@ import agiletravel.dai.service.attendList.AttendListService;
 import agiletravel.dai.utils.Response;
 import agiletravel.dai.utils.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
@@ -36,8 +33,8 @@ public class attendListController {
     }
 
     @RequestMapping("/attendList/history")
-    public Response attendHistory(@RequestParam String openid){
-        List<reViewHistory> list = attendListService.attendHistory(openid);
+    public Response attendHistory(@RequestBody AttendList  attendList){
+        List<reViewHistory> list = attendListService.attendHistory(attendList.getOpenId());
         return ResponseFactory.okResponse(list);
     }
 
@@ -47,10 +44,16 @@ public class attendListController {
         return ResponseFactory.okResponse(AttendListSuccess.COMMENT_ACTIVITY_SUCCESS);
     }
 
-    @RequestMapping("/attendList/viewUsers")
-    public Response viewAttendUsers(@RequestParam String travelid){
-        List<reViewUser> list = attendListService.listAttendUsers(travelid);
+    @RequestMapping(value = "/attendList/viewAttenders",method = RequestMethod.GET)
+    public Response viewAttendUsers(@RequestParam String travelId){
+        List<reViewUser> list = attendListService.listAttendUsers(travelId);
         return ResponseFactory.okResponse(list);
+    }
+
+    @RequestMapping("/attendList/isAttend")
+    public Response isAttend(@RequestBody AttendList attendList){
+        boolean result = attendListService.isAttend(attendList.getTravelId(),attendList.getOpenId());
+        return ResponseFactory.okResponse(result);
     }
 
 }

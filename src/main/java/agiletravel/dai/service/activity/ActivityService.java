@@ -30,7 +30,7 @@ public interface ActivityService {
      * 查看所有有效期内的活动
      * @return
      */
-    List<reSimpleActivity> viewAll();
+    List<Activity> viewAll();
     //按活动类别查看
 
     /**
@@ -46,15 +46,21 @@ public interface ActivityService {
      * @return
      */
     List<reSimpleActivity> findByCity(String city);
-    //按时间区间查看
-    List<Activity> findBetweenTime(Date startTime, Date endTime);
+
+    /**
+     * 更具活动名称进行模糊搜索
+     * @param title
+     * @return
+     */
+    List<reSimpleActivity> findByTitle(String title);
+
 
     /**
      * 查看活动详情
      * @param travelid
      * @return
      */
-    reDetailActivity viewDetail(String travelid);
+    Activity viewDetail(String travelid);
 
     /**
      * 查看“我”发布的所有活动

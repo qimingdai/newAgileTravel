@@ -10,9 +10,10 @@ public interface ActivityDao {
     void addActivity(Activity activity);
     void updateActivity(Activity activity);
     void cancleActivity(String travelid);
-    List<reSimpleActivity> findAll();
+    List<Activity> findAll();
     List<reSimpleActivity> findByKind(String kind);
     List<reSimpleActivity> findByCity(String city);
+    List<reSimpleActivity> findByTitle(String title);
     List<reSimpleActivity> findByOpenId(String openid);
     Activity findByTravelId(String travelid);
 }

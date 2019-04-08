@@ -40,4 +40,12 @@ public interface AttendListService {
      * @return
      */
     List<reViewUser> listAttendUsers(String travelid);
+
+    /**
+     * 判断用户是否该与了该出游活动
+     * @param travelid
+     * @param openid
+     * @return
+     */
+    boolean isAttend(String travelid, String openid);
 }

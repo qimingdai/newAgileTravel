@@ -24,17 +24,16 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void addUser(User user) {
-        String sql="insert into users values(?,?,?,?,?,?,?,?)";
-        jdbcTemplate.update(sql,user.getOpenid(),user.getNickname(),user.getGender(),user.getCountry(),
-                    user.getProvince(),user.getCity(),user.getAge(),user.getPhoneNumber());
+        String sql="insert into users values(?,?,?,?,?,?,?)";
+        jdbcTemplate.update(sql,user.getOpenId(),user.getNickname(),user.getGender(),user.getCountry(),
+                    user.getProvince(),user.getCity(),user.getPhoneNumber());
 
     }
 
     @Override
-    public void updateUser(User user) {
-        String sql="update users set nickname=?, gender=?, country=?, province=?, city=?, age=?, phonenumber=? where openid=?";
-        jdbcTemplate.update(sql,user.getNickname(),user.getGender(),user.getCountry(),user.getProvince(),
-                user.getCity(),user.getAge(),user.getPhoneNumber(),user.getOpenid());
+    public void updateUser(String openid, String nickName, String phone) {
+        String sql="update users set nickname=?,  phone=? where openid=?";
+        jdbcTemplate.update(sql,nickName, phone, openid);
 
     }
 }

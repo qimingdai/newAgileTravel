@@ -18,22 +18,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void userRegister(User user) {
+        System.out.println(user);
         userDao.addUser(user);
     }
 
+
     @Override
-    public void userLogin(User user) {
-        User userFind = userDao.findById(user.getOpenid());
-        if(userFind == null){
+    public User findUser(String openid) {
+        User user =  userDao.findById(openid);
+        if(user==null){
             throw new UserException(userEnum.User_NUMBER_DO_NOT_EXSIT);
         }
-        /*
-        用户登录功能还是不能够理解，用户是否可以退出登录
-        * */
+        return user;
     }
 
     @Override
-    public void userInfoUpdate(User user) {
-        userDao.updateUser(user);
+    public void userInfoUpdate(String openid, String nickName, String phone) {
+
+        userDao.updateUser(openid,nickName,phone);
     }
 }

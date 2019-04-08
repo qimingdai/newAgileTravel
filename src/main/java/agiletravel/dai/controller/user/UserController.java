@@ -6,9 +6,7 @@ import agiletravel.dai.service.user.UserService;
 import agiletravel.dai.utils.Response;
 import agiletravel.dai.utils.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -21,15 +19,16 @@ public class UserController {
         return ResponseFactory.okResponse(UserSuccess.RESIGTER_SUCCESS);
     }
 
-    @RequestMapping("/user/infoUpdate")
+    @RequestMapping(value = "/user/infoUpdate",method = RequestMethod.POST)
     public Response userInfoUpdate(@RequestBody User user){
-        userService.userInfoUpdate(user);
+        userService.userInfoUpdate(user.getOpenId(),user.getNickname(),user.getPhoneNumber());
         return ResponseFactory.okResponse(UserSuccess.UPDATE_INFO_SUCCESS);
     }
 
-    @RequestMapping("/user/login")
-    public Response userLogin(@RequestBody User user){
-        userService.userLogin(user);
-        return ResponseFactory.okResponse(UserSuccess.LOGIN_SUCCESS);
+    @RequestMapping(value = "/user/info",method = RequestMethod.GET)
+    public Response findUserInfo(@RequestParam String openId){
+        User user = userService.findUser(openId);
+        return ResponseFactory.okResponse(user);
     }
+
 }

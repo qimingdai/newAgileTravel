@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class reViewUser {
-    public String openid;
-    public String nickName;
-    public String phoneNumber;
+    public String openId;
+    public String nickname;
+    public int gender;
+    public String phone;
 }

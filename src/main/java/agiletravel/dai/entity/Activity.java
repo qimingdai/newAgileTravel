@@ -1,25 +1,27 @@
 package agiletravel.dai.entity;
 
 
-import com.sun.xml.internal.ws.developer.Serialization;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
+
 
 @Data
 public class Activity implements Serializable {
-    private String travelid;
-    private String openid;
-    private String city;
-    private Date startTime;
-    private Date endTime;
-    private String travelName;
+    private String travelId;
+    private String openId;
+    private String place;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp startTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Timestamp endTime;
+    private String title;
     private String description;
     private int flag=1;
-    private String kind;
+    private String types;
     private int cost;
-    private int totalNumber;
-
+    private int maxNumber;
 
 }

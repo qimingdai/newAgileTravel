@@ -35,35 +35,49 @@ public class AttendListServiceImpl implements AttendListService {
     private JavaRedis javaRedis;
 
     @Override
+    public boolean isAttend(String travelid, String openid) {
+        if(attendListDao.findByBothId(travelid,openid)==null){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public void attendActivity(AttendList attendList) {
-        attendListDao.addAttendList(attendList.getTravelid(),attendList.getOpenid());
+        //判断是否是重复参加
+        if(isAttend(attendList.getTravelId(),attendList.getOpenId())){
+            throw new AttendListException(attendListEnum.MULTIPLE_ATTENDS);
+        }
+        attendListDao.addAttendList(attendList.getTravelId(),attendList.getOpenId());
         //修改缓存中的剩余人数
-        Integer restNumber = Integer.parseInt(javaRedis.getKeyValue(attendList.getTravelid()));
+        Integer restNumber = Integer.parseInt(javaRedis.getKeyValue(attendList.getTravelId()));
         if(restNumber<=0){
             throw new AttendListException(attendListEnum.FULL_PEOPLE_ERROR);
         }
-        javaRedis.setKeyValue(attendList.getTravelid(),String.valueOf(--restNumber));
+        javaRedis.setKeyValue(attendList.getTravelId(),String.valueOf(--restNumber));
 
-        reDetailActivity activity = activityService.viewDetail(attendList.getTravelid());
+        Activity activity = activityService.viewDetail(attendList.getTravelId());
+        String startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(activity.getStartTime());
         log.info("开始给参加活动成功的人发送参加活动成功的通知");
-        activityService.alertActivity(attendList.getOpenid(),activity.getTravelName(),activity.getCity(),
-                activity.getStartTime(), MiniProgramConst.template_id,MiniProgramConst.form_id);
+        activityService.alertActivity(attendList.getOpenId(),activity.getTitle(),activity.getPlace(),
+                startTime, MiniProgramConst.template_id,MiniProgramConst.form_id);
         log.info("给参加活动的人发送成功参加通知完毕");
     }
 
     @Override
     public void quitActivity(AttendList attendList) {
-        attendListDao.deleteAttendList(attendList.getTravelid(),attendList.getOpenid());
+        attendListDao.deleteAttendList(attendList.getTravelId(),attendList.getOpenId());
         //增加缓存中的剩余人数
-        Integer restNumber = Integer.parseInt(javaRedis.getKeyValue(attendList.getTravelid()));
-        javaRedis.setKeyValue(attendList.getTravelid(),String.valueOf(++restNumber));
+        Integer restNumber = Integer.parseInt(javaRedis.getKeyValue(attendList.getTravelId()));
+        javaRedis.setKeyValue(attendList.getTravelId(),String.valueOf(++restNumber));
     }
 
     @Override
     public List<reViewHistory> attendHistory(String openid) {
-        log.info("执行查看历史纪录操作");
         List<reViewHistory> list = attendListDao.findByOpenid(openid);
-        log.info("操作执行完毕");
+        if(list==null || list.isEmpty()){
+            throw new AttendListException(attendListEnum.NO_ATTEND_ACTIVITY_HISTORY);
+        }
         return list;
     }
 
@@ -71,12 +85,15 @@ public class AttendListServiceImpl implements AttendListService {
     @Override
     public List<reViewUser> listAttendUsers(String travelid) {
         List<reViewUser> list = attendListDao.findByTravelid(travelid);
+        if(list ==null || list.isEmpty()){
+            throw new AttendListException(attendListEnum.NO_ATTENDERS_NOW);
+        }
         return list;
     }
 
     @Override
     public void commentActivity(AttendList attendList) {
 
-        attendListDao.updateComment(attendList.getComment(),attendList.getTravelid(),attendList.getOpenid());
+        attendListDao.updateComment(attendList.getComment(),attendList.getTravelId(),attendList.getOpenId());
     }
 }

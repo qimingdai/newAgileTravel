@@ -1,30 +1,19 @@
 package agiletravel.dai.utils;
 
+import lombok.Data;
+
+
+@Data
 public class Response<T> {
-    private int code;
-    private T data;
+    private int success;
+    private T content;
 
     public Response(int code, T data) {
-        this.code = code;
-        this.data = data;
+        this.success = code;
+        this.content = data;
     }
 
-    public Response() {
-    }
+    public Response(){}
 
-    public void setCode(int code) {
-        this.code = code;
-    }
 
-    public void setData(T data) {
-        this.data = data;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public T getData() {
-        return data;
-    }
 }

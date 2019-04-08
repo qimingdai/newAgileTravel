@@ -56,7 +56,7 @@ public class ActivityServiceImpl implements ActivityService {
         }
         activityDao.addActivity(activity);
         log.info("添加活动的剩余人数缓存");
-        javaRedis.setKeyValue(activity.getTravelid(),String.valueOf(activity.getTotalNumber()));
+        javaRedis.setKeyValue(activity.getTravelId(),String.valueOf(activity.getMaxNumber()));
         log.info("添加剩余人数缓存成功");
     }
 
@@ -68,11 +68,11 @@ public class ActivityServiceImpl implements ActivityService {
             throw new ActivityException(activityEnum.INCLUDE_BAD_WORDS);
         }
         activityDao.updateActivity(activity);
-        List<reViewUser> list = attendListDao.findByTravelid(activity.getTravelid());
+        List<reViewUser> list = attendListDao.findByTravelid(activity.getTravelId());
         log.info("开始通知参加的人活动变更，需要通知"+list.size()+"人");
         for(reViewUser users : list){
-            String activityTime = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(activity.getEndTime());
-            alertActivity(users.openid,activity.getTravelName(),activity.getCity(),activityTime,
+            String activityTime = new SimpleDateFormat("YYYY-MM-dd hh:mm").format(activity.getStartTime());
+            alertActivity(users.openId,activity.getTitle(),activity.getPlace(),activityTime,
                     MiniProgramConst.updateTemplate_id,MiniProgramConst.updateForm_id);
             log.info("通知活动变更中......");
         }
@@ -87,9 +87,9 @@ public class ActivityServiceImpl implements ActivityService {
         Activity activity = activityDao.findByTravelId(travelid);
         log.info("开始通知所有人活动取消，需要通知"+list.size()+"人");
         for(reViewUser users: list){
-            alertActivity(users.openid,activity.getTravelName(),activity.getCity(),"",
+            alertActivity(users.openId,activity.getTitle(),activity.getPlace(),"",
                     MiniProgramConst.cancleTemplate_id,MiniProgramConst.cancleForm_id);
-            attendListDao.deleteAttendList(travelid, users.openid);
+            attendListDao.deleteAttendList(travelid, users.openId);
             log.info("取消参加活动中......");
         }
         log.info("通知所有人活动取消完毕");
@@ -104,7 +104,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<reSimpleActivity> viewAll() {
+    public List<Activity> viewAll() {
         List list =  activityDao.findAll();
         if(list==null || list.isEmpty()){
             throw new ActivityException(activityEnum.NO_ACTIVITY);
@@ -133,20 +133,28 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
-    public List<Activity> findBetweenTime(Date startTime, Date endTime) {
-        /*在持久层暂时未实现的功能*/
-        return null;
+    public List<reSimpleActivity> findByTitle(String title) {
+        List<reSimpleActivity> list = activityDao.findByTitle(title);
+        if(list == null || list.isEmpty()){
+            throw new ActivityException(activityEnum.ACTIVITY_NOT_EXIST);
+        }
+        return list;
     }
 
     @Override
-    public reDetailActivity viewDetail(String travelid) {
+    public Activity viewDetail(String travelid) {
 
          Activity activity = activityDao.findByTravelId(travelid);
-         String restNumber = javaRedis.getKeyValue(travelid);
-         Integer rest = Integer.parseInt(restNumber);
-         reDetailActivity reDetailActivity = new reDetailActivity(activity.getTravelid(),activity.getCity(),"","",
-                 activity.getTravelName(),activity.getDescription(),activity.getKind(),activity.getCost(),activity.getTotalNumber(),rest);
-         return reDetailActivity;
+         if(activity==null){
+             throw new ActivityException(activityEnum.ACTIVITY_NOT_EXIST);
+         }
+//         String restNumber = javaRedis.getKeyValue(travelid);
+//         Integer rest = Integer.parseInt(restNumber);
+//         String startTime = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss").format(activity.getStartTime());
+//         String endTime = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss").format(activity.getEndTime());
+//         reDetailActivity reDetailActivity = new reDetailActivity(activity.getTravelId(),activity.getOpenId(),activity.getPlace(),startTime,endTime,
+//                 activity.getTitle(),activity.getDescription(),activity.getTypes(),activity.getCost(),activity.getMaxNumber(),rest);
+         return activity;
     }
 
     @Override

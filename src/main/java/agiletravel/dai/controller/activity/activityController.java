@@ -29,15 +29,15 @@ public class activityController {
         return ResponseFactory.okResponse(ActivitySuccess.UPDATE_ACTIVITY_INFO_SUCCESS);
     }
 
-    @RequestMapping("/activity/cancle")
-    public Response cancleActivity(@RequestParam String travelid){
-        activityService.cancleActivity(travelid);
+    @RequestMapping(value = "/activity/cancel",method = RequestMethod.GET)
+    public Response cancleActivity(@RequestParam String travelId){
+        activityService.cancleActivity(travelId);
         return ResponseFactory.okResponse(ActivitySuccess.CANCLE_ACTIVITY_SUCCESS);
     }
 
-    @RequestMapping("/activity/viewAll")
+    @RequestMapping(value="/activity/viewAll", method=RequestMethod.GET)
     public Response viewAll(){
-        List<reSimpleActivity> list = activityService.viewAll();
+        List<Activity> list = activityService.viewAll();
         return ResponseFactory.okResponse(list);
     }
 
@@ -53,9 +53,15 @@ public class activityController {
         return ResponseFactory.okResponse(list);
     }
 
-    @RequestMapping(value = "/activity/detail")
-    public Response findViewDetail(@RequestParam String travelid){
-        reDetailActivity activityFind = activityService.viewDetail(travelid);
+    @RequestMapping(value = "/activity/findByTitle", method = RequestMethod.GET)
+    public Response findByTitle(@RequestParam String title){
+        List<reSimpleActivity> list = activityService.findByTitle(title);
+        return ResponseFactory.okResponse(list);
+    }
+
+    @RequestMapping(value = "/activity/detail", method = RequestMethod.GET)
+    public Response findViewDetail(@RequestParam String travelId){
+        Activity activityFind = activityService.viewDetail(travelId);
         return ResponseFactory.okResponse(activityFind);
     }
 

@@ -4,25 +4,27 @@ import lombok.Data;
 
 @Data
 public class reDetailActivity {
-    private String travelid;
-    private String city;
+    private String travelId;
+    private String openId;
+    private String place;
     private String startTime;
     private String endTime;
-    private String travelName;
+    private String title;
     private String description;
-    private String kind;
+    private String types;
     private int cost;
     private int totalNumber;
     private int restNumber;
 
-    public reDetailActivity(String travelid, String city, String startTime, String endTime, String travelName, String description, String kind, int cost, int totalNumber, int restNumber) {
-        this.travelid = travelid;
-        this.city = city;
+    public reDetailActivity(String travelid,String openid, String place, String startTime, String endTime, String title, String description, String type, int cost, int totalNumber, int restNumber) {
+        this.travelId = travelid;
+        this.openId=openid;
+        this.place = place;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.travelName = travelName;
+        this.title = title;
         this.description = description;
-        this.kind = kind;
+        this.types = type;
         this.cost = cost;
         this.totalNumber = totalNumber;
         this.restNumber = restNumber;

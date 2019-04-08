@@ -14,4 +14,5 @@ public interface AttendListDao {
     List<reViewHistory> findByOpenid(String openid);
     List<reViewUser> findByTravelid(String travelid);
     void updateComment(String comment, String travelid,String openid);
+    AttendList findByBothId(String travelid,String openid);
 }
